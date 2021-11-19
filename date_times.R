@@ -13,6 +13,7 @@ library(tidyverse)
 library(lubridate)
 library(nycflights13)
 
+flights
 # Date data types
 
 # Date <date>
@@ -22,7 +23,7 @@ tibble(date = today())
 
 as.Date("1970-01-01") %>% typeof
 as.Date("1970-01-01") %>% class
-tibble(date = c(today(),
+tibble(hoje = c(today(),
                 as.Date("1970-01-01")))
 
 # Date-Time <dttm> aka POSIXct = seconds post 1 Jan 1970
@@ -109,14 +110,23 @@ as_date(now())
 # Exercises ---------------------------------------------------------------
 
 # 1. What happens if you parse a string that contains invalid dates? E.g. c("2010-10-10", "bananas")
+
 # 2. Use the appropriate lubricate function to parse those:
 
 d1 <- "January 1, 2010"
-d2 <- "2015-Mar-07"
-d3 <- "06-Jun-2017"
-d4 <- c("August 19 (2015)", "July 1 (2015)")
-d5 <- "12/30/14" # Dec 30, 2014
+d1 <- d1 %>%  mdy
 
+d2 <- "2015-Mar-07"
+d2 <- d2 %>% ymd
+
+d3 <- "06-Jun-2017"
+d3 <- d3 %>% dmy
+
+d4 <- c("August 19 (2015)", "July 1 (2015)")
+d4 <- d4 %>% mdy
+
+d5 <- "12/30/14" # Dec 30, 2014
+d5 <- d5 %>% mdy
 
 # Individual components from datetime -------------------------------------
 
@@ -126,8 +136,8 @@ now() %>% mday
 now() %>% yday
 now() %>% wday
 
-now() %>% month(label = T, abbr = F)
-now() %>% wday(label = T)
+now() %>% month(label = T, abbr = T)
+now() %>% wday(label = T, abbr = F)
 
 flights_dt %>% 
   mutate(wday = wday(dep_time, label = TRUE)) %>% 
@@ -283,6 +293,24 @@ next_year <- today() + years(1)
 
 # Exercises ---------------------------------------------------------------
 
-# 1a. Create a vector of dates giving the first day of every month in 2015. 
+# 1a. Create a vector of dates giving the first day of every month in 2015.
+
+make_date(2015,1:12,01)
+
+c(ymd("2015-01-01"), ymd("2015-01-01") + month(1:11))
+
 # 1b. Create a vector of dates giving the first day of every month in the current year.
+
+make_date(now() %>% year,1:12,01)
+
+make_date(year(now()),1:12,01)
+
 # 2. Write a function that given a birthday of a person (as a date), returns how old the person is in years.
+
+
+age <- function (birthday=date()){
+  (birthday %--% today()) %/% years(1)
+}
+
+
+age(dmy("21-09-1990"))

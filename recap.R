@@ -1,4 +1,5 @@
 library(tidyverse)
+library(tidyr)
 
 # Recap Exercise I: Cleaning --------------------------------------------------
 
@@ -53,21 +54,36 @@ data2 <- read.csv(url("https://education.rstudio.com/blog/2020/08/more-example-e
 #something like, €œtitle has # rows and # columnsâ€. For example, summarize_table('our table', person) should return the 
 #string "our table has 5 rows and 3 columns".
 
-summarize_table <- function(data) {
+summarize_table1 <- function(data) {
   print(paste ("our table has", nrow(data), "rows and", ncol(data), "columns"))
 }
 
-summarize_table(data2)
+summarize_table1(data2)
+library(stringr)
+
+summarize_table <- function(x, y) {
+  str_c(x, "has", nrow(y), "rows and", ncol(y), "columns.", sep=" ")
+}
+
+summarize_table("our table", data2)
+
 
 # 3. Write another function called show_columns that takes a string and a tibble as input and returns a string that says something
 #like, â€œtable has columns name, name, name". 
 # For example, show_columns('person', person) should return the string "person has columns person_id, personal_name, family_name".
 
 show_columns <- function(data) {
-  print(paste ("The table has columns", colnames(data), collapse = ''))
+  print(paste ("The table has columns", colnames(data), collapse = ","))
   }
 
 show_columns(data2)
+show_columns <- function(title = character(), data = tibble()) {
+  return(
+    str_c(title, "has columns", str_c(colnames(data), collapse=", "), sep= " ")
+  )
+}
+
+show_columns("our table", data2)
 
 # Recap Exercise III: Tidy Data ----------------------------------------
 
@@ -88,5 +104,24 @@ data3 <- read.csv(url("https://education.rstudio.com/blog/2020/02/instructor-cer
 # 2.2 The body of the function may contain one or more pipelines and may create temporary or intermediate variables, 
 # but may not contain any loops.
 
+import_data <- function(link = character()) {
+  read_csv(link,
+           na = c("-", ">95%")) %>%
+    pivot_longer(-ISO3, names_to = "type", values_to = "value") %>%
+    separate(type, into = c("year", "type"), sep = " ", convert = T) %>%
+    pivot_wider(names_from = type, values_from = value)
+}
+
+new_data <- import_data("https://education.rstudio.com/blog/2020/02/instructor-certification-exams/infant_hiv.csv")
+
+
+
+data3 <- read.csv(url("https://education.rstudio.com/blog/2020/02/instructor-certification-exams/infant_hiv.csv"))
+
+  data3 %>%
+   # na = c("-", ">95%")  %>%
+  pivot_longer(-ISO3, names_to = "type", values_to = "percentages") %>%
+  separate(col = type, into = c("year", "type"), sep = " ", convert = T) %>%
+  pivot_wider(names_from = type, values_from = percentages)
 
 
