@@ -16,6 +16,27 @@ library(tidyverse)
 # 5. Create a tibble in which all salinity ("sal") readings greater than 1 are divided by 100. 
 # (This is needed because some people wrote percentages as numbers from 0.0 to 1.0, but others wrote them as 0.0 to 100.0.)
 
+##1
+data1 <- read.csv(url("https://education.rstudio.com/blog/2020/08/more-example-exams/measurements.csv"))
+
+##2
+cleaned <- na.omit(data1)
+cleaned <- data1[complete.cases(data1), ]
+
+##3
+cleaned %>% group_by(quantity) %>% summarise(n = n())
+
+cleaned %>%
+  count(quantity)
+
+##4
+cleaned %>% group_by(quantity) %>%
+  summarize(minreading = min(reading), 
+            maxreading = max(reading))
+##5 if its higher than 1, than divide, if not, then keep the original
+cleaned %>% 
+  mutate  (reading = ifelse (quantity == "sal" & reading > 1, reading / 100, reading))
+
 
 # Recap Exercise II: Functions ---------------------------------------------
 
@@ -44,3 +65,8 @@ library(tidyverse)
 # 2.1 The function should replace all - and >95% values with NA. 
 # 2.2 The body of the function may contain one or more pipelines and may create temporary or intermediate variables, 
 # but may not contain any loops.
+
+
+
+
+data <- read.csv(url("https://education.rstudio.com/blog/2020/02/instructor-certification-exams/infant_hiv.csv"))
